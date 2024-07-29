@@ -9,7 +9,6 @@
         "preview": "vite preview",
         "build-only": "vite build",
         "type-check": "vue-tsc --build --force",
-        "lint": "eslint . --report-unused-disable-directives --max-warnings 0 && stylelint '**/*.css' --max-warnings 0",
         "format": "prettier --write src/",
         "test": "jest"
     },

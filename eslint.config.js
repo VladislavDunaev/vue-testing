@@ -34,6 +34,9 @@ export default tseslint.config(
             },
             ecmaVersion: "latest",
         },
+        linterOptions: {
+            reportUnusedDisableDirectives: "error",
+        },
     },
     {
         files: ["**/*.{js,ts,vue}"],
