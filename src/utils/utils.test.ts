@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { applyMask } from "../utils/utils";
 
 describe("Apply Mask Function", () => {
@@ -9,6 +10,10 @@ describe("Apply Mask Function", () => {
         ${"44444444"}       | ${"00000-000"}           | ${"44444-444"}
         ${"5555555555"}     | ${"(000) 000-0000"}      | ${"(555) 555-5555"}
         ${"666666666666"}   | ${"000.000.000.000"}     | ${"666.666.666.666"}
+        ${"lowUPP000"}      | ${"AAA/AAA/AAA"}         | ${"low/UPP/000"}
+        ${"lowerUPPER"}     | ${"SSSSS-SSSSS"}         | ${"lower-UPPER"}
+        ${"UPPER"}          | ${"U-U-U-U-U"}           | ${"U-P-P-E-R"}
+        ${"lower"}          | ${"L_L_L_L_L"}           | ${"l_o_w_e_r"}
     `("Mask $mask with input $input equal $result", ({ input, mask, result }) => {
         expect(applyMask(input, { value: mask })).toBe(result);
     });
@@ -19,21 +24,15 @@ describe("Apply Mask Function", () => {
         expect(maskedInput).toEqual("9 9 9 9");
     });
 
-    it("If the string has letters but uses a numeric modifier, only numbers will be included in the mask", () => {
-        const input = "qwwerewdfsfsdf345lkgfgklfgflg678kfgkgfgf90";
-        const maskedInput = applyMask(input, { value: "00/00/0000", modifiers: { numeric: true } });
-        expect(maskedInput).toEqual("34/56/7890");
-    });
-
-    it("If there are letters in the string and no numeric modifier is used, the mask will include letters and numbers", () => {
-        const input = "qwerty+1-2/";
-        const maskedInput = applyMask(input, { value: "0-0-0-0-0-0-0-0" });
-        expect(maskedInput).toEqual("q-w-e-r-t-y-1-2");
+    it("If the next letter does not match the pattern, all following characters are ignored", () => {
+        const input = "1234ignorenext";
+        const maskedInput = applyMask(input, { value: "00/00/0000" });
+        expect(maskedInput).toEqual("12/34/");
     });
 
     it("If a string is passed that is too short, it will be formatted for as long as it lasts", () => {
-        const input = "to-short";
-        const maskedInput = applyMask(input, { value: "00/00/00/00/00" });
+        const input = "toshort";
+        const maskedInput = applyMask(input, { value: "SS/SS/SS/SS/SS" });
         expect(maskedInput).toEqual("to/sh/or/t");
     });
 });

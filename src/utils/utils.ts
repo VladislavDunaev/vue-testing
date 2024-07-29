@@ -1,25 +1,40 @@
-export function applyMask(value, binding) {
-    const { value: mask, modifiers } = binding;
+import type { IBinding, ITokens } from "@/types";
 
-    let pureString = value.replace(/\W/g, "");
+export function applyMask(value: string, binding: IBinding): string {
+    const { value: mask } = binding;
 
-    if (modifiers?.numeric) {
-        pureString = pureString.replace(/\D/g, "");
-    }
+    let formatted: string = "";
+    let valPosition: number = 0;
+    const splitMask: string[] = mask.split("");
 
-    let formattedValue = "";
+    const tokens: ITokens = {
+        0: { pattern: /\d/ },
+        9: { pattern: /\d/ },
+        A: { pattern: /[a-zA-Z0-9]/ },
+        S: { pattern: /[a-zA-Z]/ },
+        U: { pattern: /[A-Z]/ },
+        L: { pattern: /[a-z]/ },
+    };
 
-    let maskIndex = 0;
-    for (let i = 0; i < pureString.length && maskIndex < mask.length; i++) {
-        if (mask[maskIndex] === "0") {
-            formattedValue += pureString[i];
-            maskIndex++;
+    for (let i = 0; i <= splitMask.length - 1; i++) {
+        const maskChar = splitMask[i];
+
+        if (!value[valPosition]) break;
+
+        const token = tokens[maskChar as keyof ITokens];
+
+        if (token && token?.pattern.test(value[valPosition])) {
+            formatted += value[valPosition];
+            valPosition++;
+        } else if (!token && value[valPosition]) {
+            formatted += maskChar;
+            if (maskChar === value[valPosition]) {
+                valPosition++;
+            }
         } else {
-            formattedValue += mask[maskIndex];
-            maskIndex++;
-            i--;
+            break;
         }
     }
 
-    return formattedValue;
+    return formatted;
 }
