@@ -40,6 +40,7 @@ export default tseslint.config(
     },
     {
         files: ["**/*.{js,ts,vue}"],
+        ignores: ["**/*.config.js"],
         rules: {
             ...eslintConfigPrettier.rules,
             "prettier/prettier": ["warn"],
